@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@id/home2">
+
+    <fragment
+        android:id="@+id/home2"
+        android:name="com.example.noteappandroid.ui.home.Home"
+        android:label="fragment_home"
+        tools:layout="@layout/fragment_home">
+        <action
+            android:id="@+id/action_home2_to_createNote"
+            app:destination="@id/createNote" />
+        <action
+            android:id="@+id/action_home2_to_createLabelDialog2"
+            app:destination="@id/createLabelDialog" />
+        <action
+            android:id="@+id/action_home2_to_listFolders"
+            app:destination="@id/listFolders" />
+        <action
+            android:id="@+id/action_home2_to_noteDialogFragment"
+            app:destination="@id/noteDialogFragment" />
+        <action
+            android:id="@+id/action_home2_to_labelDialogFragment"
+            app:destination="@id/labelDialogFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/createNote"
+        android:name="com.example.noteappandroid.ui.create_notes.CreateNote"
+        android:label="fragment_create_note"
+        tools:layout="@layout/fragment_create_note">
+        <action
+            android:id="@+id/action_createNote_to_home2"
+            app:destination="@id/home2" />
+        <action
+            android:id="@+id/action_createNote_to_noteBottomSheetFragment"
+            app:destination="@id/noteBottomSheetFragment" />
+        <argument
+            android:name="noteIdFromHome"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_createNote_to_noteReminderDialog"
+            app:destination="@id/noteReminderDialog" />
+        <action
+            android:id="@+id/action_createNote_to_createLabelDialog"
+            app:destination="@id/createLabelDialog" />
+        <action
+            android:id="@+id/action_createNote_to_listNoteInFolder"
+            app:destination="@id/listNoteInFolder" />
+        <action
+            android:id="@+id/action_createNote_to_labelDialogFragment"
+            app:destination="@id/labelDialogFragment" />
+    </fragment>
+    <dialog
+        android:id="@+id/noteBottomSheetFragment"
+        android:name="com.example.noteappandroid.ui.create_notes.NoteBottomSheetFragment"
+        android:label="fragment_note_bottom_sheet"
+        tools:layout="@layout/fragment_note_bottom_sheet">
+        <action
+            android:id="@+id/action_noteBottomSheetFragment_to_createNote"
+            app:destination="@id/createNote" />
+        <argument
+            android:name="noteId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_noteBottomSheetFragment_to_noteReminderDialog"
+            app:destination="@id/noteReminderDialog" />
+    </dialog>
+    <dialog
+        android:id="@+id/noteReminderDialog"
+        android:name="com.example.noteappandroid.ui.create_notes.NoteReminderDialog"
+        android:label="NoteReminderDialog">
+        <argument
+            android:name="folder_id"
+            app:argType="long" />
+        <argument
+            android:name="note_id"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_noteReminderDialog_to_noteDialogFragment"
+            app:destination="@id/noteDialogFragment" />
+    </dialog>
+    <fragment
+        android:id="@+id/createFolderFragment"
+        android:name="com.example.noteappandroid.ui.folder.CreateFolderFragment"
+        android:label="fragment_create_folder"
+        tools:layout="@layout/fragment_create_folder">
+        <action
+            android:id="@+id/action_createFolderFragment_to_listFolders"
+            app:destination="@id/listFolders" />
+    </fragment>
+    <fragment
+        android:id="@+id/createLabelDialog"
+        android:name="com.example.noteappandroid.ui.create_notes.CreateLabelDialog"
+        android:label="fragment_create_label_dialog"
+        tools:layout="@layout/fragment_create_label_dialog">
+        <action
+            android:id="@+id/action_createLabelDialog_to_createNote"
+            app:destination="@id/createNote" />
+        <action
+            android:id="@+id/action_createLabelDialog_to_home2"
+            app:destination="@id/home2" />
+    </fragment>
+    <fragment
+        android:id="@+id/listFolders"
+        android:name="com.example.noteappandroid.ui.folder.ListFolders"
+        android:label="fragment_list_folders"
+        tools:layout="@layout/fragment_list_folders">
+        <action
+            android:id="@+id/action_listFolders_to_home2"
+            app:destination="@id/home2" />
+        <action
+            android:id="@+id/action_listFolders_to_createFolderFragment"
+            app:destination="@id/createFolderFragment" />
+        <action
+            android:id="@+id/action_listFolders_to_listNoteInFolder"
+            app:destination="@id/listNoteInFolder" />
+    </fragment>
+    <fragment
+        android:id="@+id/listNoteInFolder"
+        android:name="com.example.noteappandroid.ui.folder.ListNoteInFolder"
+        android:label="fragment_list_note_in_folder"
+        tools:layout="@layout/fragment_list_note_in_folder">
+        <action
+            android:id="@+id/action_listNoteInFolder_to_listFolders"
+            app:destination="@id/listFolders" />
+        <argument
+            android:name="folderId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_listNoteInFolder_to_createNote"
+            app:destination="@id/createNote" />
+        <action
+            android:id="@+id/action_listNoteInFolder_to_noteDialogFragment"
+            app:destination="@id/noteDialogFragment" />
+        <action
+            android:id="@+id/action_listNoteInFolder_to_labelDialogFragment"
+            app:destination="@id/labelDialogFragment" />
+        <action
+            android:id="@+id/action_listNoteInFolder_self"
+            app:destination="@id/listNoteInFolder" />
+    </fragment>
+    <dialog
+        android:id="@+id/noteDialogFragment"
+        android:name="com.example.noteappandroid.ui.create_notes.NoteDialogFragment"
+        android:label="fragment_note_dialog"
+        tools:layout="@layout/fragment_note_dialog">
+        <action
+            android:id="@+id/action_noteDialogFragment_to_home2"
+            app:destination="@id/home2" />
+        <action
+            android:id="@+id/action_noteDialogFragment_to_listNoteInFolder"
+            app:destination="@id/listNoteInFolder" />
+        <argument
+            android:name="noteId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_noteDialogFragment_to_noteReminderDialog"
+            app:destination="@id/noteReminderDialog" />
+    </dialog>
+    <fragment
+        android:id="@+id/labelDialogFragment"
+        android:name="com.example.noteappandroid.ui.create_notes.LabelDialogFragment"
+        android:label="fragment_label_dialog"
+        tools:layout="@layout/fragment_label_dialog">
+        <argument
+            android:name="folderId"
+            app:argType="long" />
+        <argument
+            android:name="noteId"
+            app:argType="long" />
+        <action
+            android:id="@+id/action_labelDialogFragment_to_listNoteInFolder"
+            app:destination="@id/listNoteInFolder" />
+        <argument
+            android:name="isCreateFromNote"
+            app:argType="boolean" />
+    </fragment>
+</navigation>

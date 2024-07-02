@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/ll"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="@dimen/spacing_small"
+    android:layout_marginVertical="@dimen/pad_5"
+    android:animateLayoutChanges="true"
+    android:background="@drawable/folder_item_shape"
+    android:gravity="center"
+    android:orientation="horizontal"
+    android:stateListAnimator="@animator/elevation_animator">
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txtFolderTitle"
+        style="@style/FolderTitleTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_small"
+        android:layout_weight="1"
+        android:contentDescription="@string/none"
+        android:drawableStart="@drawable/ic_round_folder_24"
+        android:drawablePadding="@dimen/spacing_normal"
+        android:padding="@dimen/spacing_normal"
+        tools:text="@string/general" />
+
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/tv_folder_notes_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_small"
+        tools:text="3" />
+
+</LinearLayout>

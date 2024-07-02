@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/BaseDialogFragment"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/spacing_normal">
+
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/btnClose"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/mar_10"
+            android:contentDescription="@string/todo"
+            android:padding="@dimen/mar_10"
+            android:src="@drawable/ic_cancel" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvListFolders"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/tv_parent_folder_option"
+            style="@style/FolderTitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/mar_10"
+            android:background="@drawable/generic_shape"
+            android:contentDescription="@string/none"
+            android:drawableStart="@drawable/ic_round_none_24"
+            android:drawablePadding="@dimen/spacing_normal"
+            android:padding="@dimen/spacing_normal"
+            android:text="@string/none"
+            android:layout_marginHorizontal="@dimen/spacing_small"
+            app:layout_anchor="@+id/btn_create"
+            app:layout_anchorGravity="bottom|center" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnChoose"
+            style="@style/MaterialButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginVertical="@dimen/spacing_normal"
+            android:padding="@dimen/spacing_normal"
+            android:text="@string/choose" />
+
+    </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

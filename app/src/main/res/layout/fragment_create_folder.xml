@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cool"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
+    android:background="@color/colorBackground">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/abl"
+        style="@style/AppBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/tb"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:navigationContentDescription="@string/back"
+            app:navigationIcon="@drawable/ic_round_back_24"
+            app:title="@string/new_folder" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:overScrollMode="never"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <LinearLayout
+            android:id="@+id/ll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:paddingHorizontal="@dimen/spacing_normal"
+            android:paddingBottom="@dimen/padding_bottom">
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_folder_title"
+                style="@style/DialogSectionItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/spacing_normal"
+                android:text="@string/title" />
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/til"
+                style="@style/TextInputLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:theme="@style/TextInputLayout">
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/et"
+                    style="@style/TextInputEditText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:hint="@string/title"
+                    android:imeOptions="actionDone"
+                    android:inputType="text|textAutoCorrect|textCapSentences" />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_folder_color"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/spacing_normal"
+                android:text="@string/color" />
+
+            <com.airbnb.epoxy.EpoxyRecyclerView
+                android:id="@+id/rv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/generic_shape"
+                android:orientation="horizontal"
+                tools:listitem="@layout/color_item" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/tv_parent_folder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/spacing_normal"
+                android:text="@string/parent_folder" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/txtChooseParentFolder"
+                style="@style/FolderTitleTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/generic_shape"
+                android:contentDescription="@string/none"
+                android:drawableStart="@drawable/ic_round_none_24"
+                android:drawablePadding="@dimen/spacing_normal"
+                android:padding="@dimen/spacing_normal"
+                android:text="@string/none"
+                app:layout_anchor="@+id/btn_create"
+                app:layout_anchorGravity="bottom|center" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/sw_show_note_creation_date"
+                style="@style/DialogSectionItem"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingVertical="@dimen/spacing_normal"
+                android:text="@string/show_note_creation_date"
+                app:thumbTint="@color/colorPrimary"
+                app:trackTint="@color/colorSurface" />
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_create"
+        style="@style/MaterialButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="@dimen/spacing_normal"
+        android:contentDescription="@string/create_folder"
+        android:padding="@dimen/spacing_normal"
+        android:text="@string/create_folder" />
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+

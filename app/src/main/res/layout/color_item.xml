@@ -1,0 +1,20 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fNoteBlue"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_margin="3sp">
+
+    <View
+        android:layout_width="33sp"
+        android:layout_height="33sp"
+        android:background="@drawable/notes_color_blue" />
+
+    <ImageView
+        android:id="@+id/imgNoteBlue"
+        android:layout_width="20sp"
+        android:layout_height="20sp"
+        android:layout_gravity="center"
+        app:tint="@color/black" />
+
+</FrameLayout>

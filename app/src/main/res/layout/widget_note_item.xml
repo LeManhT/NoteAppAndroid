@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/cardView"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/spacing_small"
+    app:cardCornerRadius="@dimen/mar_15">
+
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/widget_note_item_shape"
+        android:orientation="vertical">
+
+        <com.makeramen.roundedimageview.RoundedImageView
+            android:id="@+id/imgNote"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:adjustViewBounds="true"
+            android:scaleType="fitXY"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txtNoteTitle"
+            style="@style/WidgetNoteTitleTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/pad_5"
+            android:autoLink="all"
+            android:ellipsize="end"
+            android:gravity="center"
+            android:linksClickable="false"
+            android:maxLines="1"
+            android:paddingHorizontal="@dimen/pad_20"
+            android:paddingBottom="@dimen/spacing_extra_small"
+            android:textColorLink="@color/colorPrimary"
+            android:textStyle="bold"
+            tools:text="Lorem Ipsum is simply dummy text of the printing and typesetting industry" />
+
+        <TextView
+            android:id="@+id/tvWebLink"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="web"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:paddingHorizontal="@dimen/pad_20"
+            android:text="@string/todo"
+            android:textSize="13sp"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/txtNoteBody"
+            style="@style/WidgetNoteBodyTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:autoLink="all"
+            android:ellipsize="end"
+            android:linksClickable="false"
+            android:maxLines="3"
+            android:paddingHorizontal="@dimen/pad_20"
+            android:paddingTop="@dimen/spacing_extra_small"
+            android:textColorLink="@color/colorPrimary"
+            tools:text="Lorem Ipsum is simply dummy text of the printing andttt typesetting industry" />
+
+        <TextView
+            android:id="@+id/txtNoteDate"
+            style="@style/WidgetNoteDateTextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/spacing_small"
+            android:layout_marginBottom="16dp"
+            android:paddingHorizontal="@dimen/pad_20"
+            android:textStyle="italic"
+            tools:text="Created at Aug 30" />
+
+    </LinearLayout>
+
+    <ImageView
+        android:id="@+id/imgSelected"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:contentDescription="@string/select"
+        android:src="@drawable/ic_round_check_circle_24"
+        android:stateListAnimator="@animator/elevation_animator"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</androidx.cardview.widget.CardView>
