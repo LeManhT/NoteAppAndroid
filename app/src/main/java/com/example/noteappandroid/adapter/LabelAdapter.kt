@@ -1,5 +1,6 @@
 package com.example.noteappandroid.adapter
 
+import android.annotation.SuppressLint
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
@@ -24,7 +25,7 @@ class LabelAdapter(private val onLabelClickListener: ILabelClick? = null) :
         return LabelViewHolder(view)
     }
 
-    override fun onBindViewHolder(holder: LabelViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: LabelViewHolder, @SuppressLint("RecyclerView") position: Int) {
         val label = labels[position]
         holder.tvTitle.text = label.title
         holder.itemView.setOnClickListener {

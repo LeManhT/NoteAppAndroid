@@ -1,6 +1,5 @@
 package com.example.noteappandroid.repository.label
 
-import android.util.Log
 import com.example.noteappandroid.databases.dao.LabelDao
 import com.example.noteappandroid.entity.Label
 import kotlinx.coroutines.flow.Flow
