@@ -52,6 +52,12 @@
         <action
             android:id="@+id/action_createNote_to_labelDialogFragment"
             app:destination="@id/labelDialogFragment" />
+        <argument
+            android:name="currentFolderId"
+            app:argType="long" />
+        <argument
+            android:name="isFromCurrentFolder"
+            app:argType="boolean" />
     </fragment>
     <dialog
         android:id="@+id/noteBottomSheetFragment"

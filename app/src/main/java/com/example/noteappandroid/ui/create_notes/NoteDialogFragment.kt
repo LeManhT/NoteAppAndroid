@@ -41,6 +41,7 @@ import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.datetime.toLocalDateTime
 import org.apache.poi.hssf.usermodel.HSSFWorkbook
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import java.io.FileOutputStream
@@ -79,12 +80,20 @@ class NoteDialogFragment : BaseDialogFragment(), FolderClickListener {
                 if (it != null) {
                     val html = it.noteText
                     val trimmedHtml = html?.trim()
-                    val spannable = Html.fromHtml(trimmedHtml, Html.FROM_HTML_MODE_LEGACY)
+                    val spannable = Html.fromHtml(
+                        trimmedHtml,
+                        Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH
+                    )
                     binding.vNote.tvNoteBody.text = spannable
                 }
-//                binding.vNote.tvNoteBody.text = it?.noteText
+                //                binding.vNote.tvNoteBody.text = it?.noteText
                 if (it?.reminderDate != null) {
-                    binding.vNote.tvReminder.text = it.reminderDate.toString()
+                    Log.d(
+                        "DATE",
+                        it.reminderDate.toString()
+                    )
+                    binding.vNote.tvReminder.text =
+                        convertInstantToLocalDateTime(it.reminderDate)
                 }
                 binding.vNote.tvCreationDate.text = it?.dateTime
             }
@@ -93,7 +102,12 @@ class NoteDialogFragment : BaseDialogFragment(), FolderClickListener {
         binding.tvShareNote.setOnClickListener {
             val shareIntent = Intent(Intent.ACTION_SEND)
             shareIntent.type = "text/plain"
-            shareIntent.putExtra(Intent.EXTRA_TEXT, noteViewModel.note.value?.noteText.toString())
+            val html = noteViewModel.note.value?.noteText
+            val trimmedHtml = html?.let { cleanHtml(it) }
+            val spannable = Html.fromHtml(
+                trimmedHtml, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH
+            )
+            shareIntent.putExtra(Intent.EXTRA_TEXT, spannable.toString())
             val chooser = Intent.createChooser(shareIntent, getString(R.string.share_note_via))
             startActivity(chooser)
         }
@@ -133,6 +147,20 @@ class NoteDialogFragment : BaseDialogFragment(), FolderClickListener {
             }
         }
 
+    }
+
+    fun convertInstantToLocalDateTime(instant: kotlinx.datetime.Instant): String {
+        val localDateTime =
+            instant.toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault())
+        return "${localDateTime.year}/${
+            localDateTime.monthNumber.toString().padStart(2, '0')
+        }/${
+            localDateTime.dayOfMonth.toString().padStart(2, '0')
+        } " + " ${
+            localDateTime.hour.toString().padStart(2, '0')
+        } : ${localDateTime.minute.toString().padStart(2, '0')} : ${
+            localDateTime.second.toString().padStart(2, '0')
+        }"
     }
 
     override fun onDismiss(dialog: DialogInterface) {
@@ -254,7 +282,13 @@ class NoteDialogFragment : BaseDialogFragment(), FolderClickListener {
 
                 val paragraph = document.createParagraph()
                 val run = paragraph.createRun()
-                run.setText(note.noteText)
+
+                val html = note.noteText
+                val trimmedHtml = html?.let { cleanHtml(it) }
+                val spannable = Html.fromHtml(
+                    trimmedHtml, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH
+                )
+                run.setText(spannable.toString())
 
                 // Specify the directory and filename for saving the DOCX file
                 val mDirectory = Environment.DIRECTORY_DOWNLOADS
@@ -269,14 +303,11 @@ class NoteDialogFragment : BaseDialogFragment(), FolderClickListener {
                 document.write(outputStream)
                 outputStream.close()
 
+                // Send broadcast when download is complete
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context, "$mFilename.docx is created", Toast.LENGTH_SHORT
                     ).show()
-                }
-
-                // Send broadcast when download is complete
-                withContext(Dispatchers.Main) {
                     val downloadCompleteIntent = Intent("PDF_DOWNLOAD_COMPLETE")
                     downloadCompleteIntent.putExtra("file_path", mFilePath)
                     context?.sendBroadcast(downloadCompleteIntent)
@@ -288,6 +319,19 @@ class NoteDialogFragment : BaseDialogFragment(), FolderClickListener {
                 notificationManager.cancel(notificationId)
             }
         }
+    }
+
+    private fun cleanHtml(html: String): String {
+        return html.replace(
+            Regex("(?m)^[ \t]*\r?\n"), ""
+        )
+            // Xóa các dòng chỉ chứa dấu cách hoặc dấu tab
+            .replace("<br><br>", "<br>")
+            //Thay thế các thẻ <br><br> thành <br>
+            .replace(Regex("</p>\\s*<p>"), "</p><p>")
+            // Xóa khoảng trắng giữa các thẻ </p> và <p>
+            .replace(Regex("<p[^>]*>"), "") // Xóa thẻ <p> mở
+            .replace("</p>", "<br>") // Thay thế thẻ </p> bằng <br>
     }
 
     // Import necessary classes
@@ -323,7 +367,13 @@ class NoteDialogFragment : BaseDialogFragment(), FolderClickListener {
                 }
                 val row = sheet.createRow(0)
                 val cell = row.createCell(0)
-                cell.setCellValue(note.noteText)
+
+                val html = note.noteText
+                val trimmedHtml = html?.let { cleanHtml(it) }
+                val spannable = Html.fromHtml(
+                    trimmedHtml, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH
+                )
+                cell.setCellValue(spannable.toString())
 
                 // Specify the directory and filename for saving the Excel file
                 val mDirectory = Environment.DIRECTORY_DOWNLOADS
@@ -338,25 +388,21 @@ class NoteDialogFragment : BaseDialogFragment(), FolderClickListener {
                 workbook.write(fileOutputStream)
                 fileOutputStream.close()
 
-                // Display a toast message
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context, "$mFilename.xls is created", Toast.LENGTH_SHORT
-                    ).show()
-                }
-
                 // Send broadcast when download is complete
                 withContext(Dispatchers.Main) {
                     val downloadCompleteIntent = Intent("PDF_DOWNLOAD_COMPLETE")
                     downloadCompleteIntent.putExtra("file_path", mFilePath)
                     context?.sendBroadcast(downloadCompleteIntent)
+
+                    Toast.makeText(
+                        context, "$mFilename.xls is created", Toast.LENGTH_SHORT
+                    ).show()
                 }
 
                 Log.d("saveExcel1", "error 1")
             } catch (e: Exception) {
                 // Handle exceptions
                 Log.d("saveExcel", e.message.toString())
-                Toast.makeText(context, e.message.toString(), Toast.LENGTH_SHORT).show()
             } finally {
                 // Remove the ongoing notification when the download is complete
                 notificationManager.cancel(notificationId)
@@ -370,7 +416,6 @@ class NoteDialogFragment : BaseDialogFragment(), FolderClickListener {
             true
         )
     }
-
 
     companion object {
         var noteId: Long? = null

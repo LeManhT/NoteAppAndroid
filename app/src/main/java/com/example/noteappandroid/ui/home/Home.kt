@@ -1,11 +1,14 @@
 package com.example.noteappandroid.ui.home
 
 import android.os.Bundle
-import android.util.Log
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.SearchView
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -24,6 +27,7 @@ import kotlinx.coroutines.launch
 class Home : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private lateinit var notesAdapter: NoteAdapter
+    private var doubleBackToExitPressedOnce = false
 
     private val viewModel by viewModels<HomeViewModel>()
 
@@ -68,6 +72,29 @@ class Home : Fragment() {
                 return true
             }
         })
+
+        // Setup back press handling
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    if (doubleBackToExitPressedOnce) {
+                        requireActivity().finish()
+                    } else {
+                        doubleBackToExitPressedOnce = true
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.back_press_again_to_out_app),
+                            Toast.LENGTH_SHORT
+                        ).show()
+
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            doubleBackToExitPressedOnce = false
+                        }, 2000)
+                    }
+                }
+            })
+
     }
 
     private fun collectNotes() = viewLifecycleOwner.lifecycleScope.launch {
@@ -84,8 +111,12 @@ class Home : Fragment() {
     }
 
     private val onClicked = object : NoteAdapter.OnItemClickListener {
-        override fun onClicked(notesId: Long) {
-            val action = HomeDirections.actionHome2ToCreateNote(notesId)
+        override fun onClicked(noteId: Long, folderId: Long) {
+            val action = HomeDirections.actionHome2ToCreateNote(
+                noteId,
+                folderId,
+                folderId != 1L
+            )
             findNavController().navigate(action)
         }
 

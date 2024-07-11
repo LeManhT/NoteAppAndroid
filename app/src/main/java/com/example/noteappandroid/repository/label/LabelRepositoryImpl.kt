@@ -33,7 +33,7 @@ class LabelRepositoryImpl @Inject constructor(private val labelDao: LabelDao) : 
     }
 
     override fun getLabelsForNoteId(noteId: Long): Flow<List<Label>> {
-        Log.d("TAG", "getLabelsForNoteId called with noteId: $noteId")
+//        Log.d("TAG", "getLabelsForNoteId called with noteId: $noteId")
         return labelDao.getLabelsForNoteId(noteId)
     }
 }

@@ -26,10 +26,13 @@ import android.text.Editable
 import android.text.Html
 import android.text.Layout
 import android.text.Spannable
+import android.text.SpannableString
 import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.TextWatcher
 import android.text.style.AlignmentSpan
 import android.text.style.StyleSpan
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.util.Patterns
 import android.util.TypedValue
@@ -59,6 +62,7 @@ import com.example.noteappandroid.adapter.FolderAdapter
 import com.example.noteappandroid.adapter.LabelAdapter
 import com.example.noteappandroid.databinding.FragmentCreateNoteBinding
 import com.example.noteappandroid.entity.Folder
+import com.example.noteappandroid.entity.Label
 import com.example.noteappandroid.entity.NoteEntity
 import com.example.noteappandroid.listeners.FolderClickListener
 import com.example.noteappandroid.ui.folder.FolderViewModel
@@ -87,12 +91,14 @@ import java.util.Locale
 
 @AndroidEntryPoint
 class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
-    EasyPermissions.PermissionCallbacks {
+    EasyPermissions.PermissionCallbacks, LabelAdapter.ILabelClick {
     private lateinit var binding: FragmentCreateNoteBinding
     private val viewModel by viewModels<CreateNoteViewModel>()
     private val labelViewModel by viewModels<LabelViewModel>()
 
     private var noteIdFromHome: Long? = null
+    private var currentFolderId: Long? = null
+    private var isFromCurrentFolder: Boolean? = false
     var selectedColor = "#3e434e"
     private var currentTime: String? = null
 
@@ -202,6 +208,8 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
 
         arguments?.let {
             noteIdFromHome = it.getLong("noteIdFromHome", -1)
+            currentFolderId = it.getLong("currentFolderId", -1)
+            isFromCurrentFolder = it.getBoolean("isFromCurrentFolder", false)
         }
         noteIdFromHome?.let {
             viewModel.setNoteId(it)
@@ -233,7 +241,7 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         noteIdFromHome?.let { labelViewModel.getLabelsForNoteId(it) }
-        val labelAdapter = LabelAdapter()
+        val labelAdapter = LabelAdapter(this)
         binding.rvLabels.adapter = labelAdapter
         binding.rvLabels.layoutManager =
             LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
@@ -257,32 +265,52 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
         colorView.setBackgroundColor(Color.parseColor(note.color))
         etNoteTitle.setText(note.title)
         val html = note.noteText
-        val trimmedHtml = html?.trim()
-        val spannable = Html.fromHtml(trimmedHtml, Html.FROM_HTML_MODE_LEGACY)
+        note.noteText?.let { Log.d("HTMLLLLL", cleanHtml(it)) }
+        val trimmedHtml = html?.let { cleanHtml(it) }
+        val spannable = Html.fromHtml(
+            trimmedHtml, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH
+        )
         binding.etNoteDesc.setText(spannable)
         if (note.folderId != null) {
             folderId = note.folderId ?: 1
         }
-        txtCharacters.text =
-            resources.getString(R.string.characters, note.noteText?.length.toString())
-
+        txtCharacters.text = resources.getString(
+            R.string.characters, note.noteText?.length.toString()
+        )
         if (note.imgPath != EMPTY_STRING) {
             selectedImagePath = note.imgPath.orEmpty()
             imgNote.setImageBitmap(BitmapFactory.decodeFile(note.imgPath))
             makeVisible(layoutImage, binding.imgNote, binding.imgDelete)
         } else {
-            makeGone(layoutImage, binding.imgNote, binding.imgDelete)
+            makeGone(
+                layoutImage, binding.imgNote, binding.imgDelete
+            )
         }
-
         if (note.storeWebLink != EMPTY_STRING) {
             webLink = note.storeWebLink.orEmpty()
             tvWebLink.text = note.storeWebLink
-            makeVisible(layoutWebUrl, imgUrlDelete)
+            makeVisible(
+                layoutWebUrl, imgUrlDelete
+            )
             etWebLink.setText(note.storeWebLink)
         } else {
             makeGone(imgUrlDelete, layoutWebUrl)
         }
     }
+
+    private fun cleanHtml(html: String): String {
+        return html.replace(
+            Regex("(?m)^[ \t]*\r?\n"), ""
+        )
+            // Xóa các dòng chỉ chứa dấu cách hoặc dấu tab
+            .replace("<br><br>", "<br>")
+            //Thay thế các thẻ <br><br> thành <br>
+            .replace(Regex("</p>\\s*<p>"), "</p><p>")
+            // Xóa khoảng trắng giữa các thẻ </p> và <p>
+            .replace(Regex("<p[^>]*>"), "") // Xóa thẻ <p> mở
+            .replace("</p>", "<br>") // Thay thế thẻ </p> bằng <br>
+    }
+
 
     private fun initViews() = binding.apply {
         LocalBroadcastManager.getInstance(requireContext()).registerReceiver(
@@ -334,7 +362,12 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
             imgShareNote.setOnClickListener {
                 val shareIntent = Intent(Intent.ACTION_SEND)
                 shareIntent.type = "text/plain"
-                shareIntent.putExtra(Intent.EXTRA_TEXT, viewModel.note.value?.noteText.toString())
+                val html = viewModel.note.value?.noteText
+                val trimmedHtml = html?.let { cleanHtml(it) }
+                val spannable = Html.fromHtml(
+                    trimmedHtml, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH
+                )
+                shareIntent.putExtra(Intent.EXTRA_TEXT, spannable.toString())
                 val chooser = Intent.createChooser(shareIntent, getString(R.string.share_note_via))
                 startActivity(chooser)
             }
@@ -377,7 +410,7 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
                     it1
                 )
             }
-            Log.d("action", action.toString())
+//            Log.d("action", action.toString())
             if (action != null) {
                 findNavController().navigate(action)
             }
@@ -417,7 +450,8 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
             binding.iconUnderline.setOnClickListener {
                 isUnderlined = !isUnderlined
                 it.isSelected = isUnderlined
-                applyStyle(StyleSpan(Typeface.BOLD_ITALIC))
+//                applyStyle(StyleSpan(Typeface.BOLD_ITALIC))
+                underlineText()
             }
 
             binding.iconAlignLeft.setOnClickListener {
@@ -602,28 +636,30 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
 
     private fun updateNote(note: NoteEntity) = viewLifecycleOwner.lifecycleScope.launch {
         val spannable = binding.etNoteDesc.text
+        // Chuyển đổi Spannable sang HTML
         var html = Html.toHtml(spannable, Html.TO_HTML_PARAGRAPH_LINES_INDIVIDUAL).trim()
+        // Loại bỏ các dòng trắng không mong muốn
         html = html.replace(Regex("(?m)^[ \t]*\r?\n"), "")
-
+        // Xóa các dòng chỉ chứa dấu cách hoặc dấu tab
+        html = html.replace("<br><br>", "<br>")
+        // Thay thế các thẻ <br><br> thành <br>
+        html = html.replace(Regex("</p>\\s*<p>"), "</p><p>")
+        // Xóa khoảng trắng giữa các thẻ </p> và <p>
         note.apply {
             title = binding.etNoteTitle.text.toString()
-            noteText = html.toString()
+            noteText = html
             dateTime = currentTime
             color = selectedColor
             imgPath = selectedImagePath
             storeWebLink = webLink
-        }.also {
-            viewModel.updateNote(it)
-        }
+        }.also { viewModel.updateNote(it) }
         binding.etNoteTitle.setText(EMPTY_STRING)
         binding.etNoteDesc.setText(EMPTY_STRING)
-        makeGone(
-            with(binding) {
-                layoutImage
-                imgNote
-                tvWebLink
-            }
-        )
+        makeGone(with(binding) {
+            layoutImage
+            imgNote
+            tvWebLink
+        })
         requireActivity().supportFragmentManager.popBackStack()
     }
 
@@ -679,7 +715,8 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
                 viewLifecycleOwner.lifecycleScope.launch {
                     NoteEntity().apply {
                         title = etNoteTitle?.text.toString()
-                        folderId = 1
+                        folderId =
+                            if (currentFolderId != 1L && isFromCurrentFolder == true) currentFolderId else 1
                         noteText = spannable.toString()
                         dateTime = currentTime
                         color = selectedColor
@@ -852,6 +889,28 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
         }
     }
 
+    private fun underlineText() {
+        val editText = binding.etNoteDesc
+        val start = editText.selectionStart
+        val end = editText.selectionEnd
+
+        val spannableString = SpannableString(editText.text)
+
+        if (start != end) {
+            spannableString.setSpan(
+                UnderlineSpan(), start, end, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        } else {
+            spannableString.setSpan(
+                UnderlineSpan(), 0, spannableString.length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
+            )
+        }
+
+        editText.setText(spannableString)
+        editText.setSelection(start, end)
+    }
+
+
     private fun alignText(alignment: Layout.Alignment) {
         val start = binding.etNoteDesc.selectionStart
         val end = binding.etNoteDesc.selectionEnd
@@ -989,7 +1048,13 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
 
                 val paragraph = document.createParagraph()
                 val run = paragraph.createRun()
-                run.setText(note.noteText)
+
+                val html = note.noteText
+                val trimmedHtml = html?.let { cleanHtml(it) }
+                val spannable = Html.fromHtml(
+                    trimmedHtml, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH
+                )
+                run.setText(spannable.toString())
 
                 // Specify the directory and filename for saving the DOCX file
                 val mDirectory = Environment.DIRECTORY_DOWNLOADS
@@ -1061,7 +1126,13 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
                 }
                 val row = sheet.createRow(0)
                 val cell = row.createCell(0)
-                cell.setCellValue(note.noteText)
+
+                val html = note.noteText
+                val trimmedHtml = html?.let { cleanHtml(it) }
+                val spannable = Html.fromHtml(
+                    trimmedHtml, Html.FROM_HTML_SEPARATOR_LINE_BREAK_PARAGRAPH
+                )
+                cell.setCellValue(spannable.toString())
 
                 // Specify the directory and filename for saving the Excel file
                 val mDirectory = Environment.DIRECTORY_DOWNLOADS
@@ -1201,6 +1272,19 @@ class CreateNote : Fragment(), TextToSpeech.OnInitListener, FolderClickListener,
                 }
             }
         }
+
+    override fun handleLabelClick(label: Label) {
+        Log.d("TAG", "HHHH")
+    }
+
+    override fun handleLabelLongClick(label: Label) {
+        MaterialAlertDialogBuilder(requireContext()).setTitle(resources.getString(R.string.title))
+            .setMessage(resources.getString(R.string.are_you_sure_to_delete_this_label))
+            .setNeutralButton(resources.getString(R.string.cancel)) { dialog, which -> dialog.dismiss() }
+            .setPositiveButton(resources.getString(R.string.accept)) { dialog, which ->
+                labelViewModel.deleteLabel(label)
+            }.show()
+    }
 
 
     companion object {

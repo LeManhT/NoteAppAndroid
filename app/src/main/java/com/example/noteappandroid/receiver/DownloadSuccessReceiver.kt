@@ -13,9 +13,13 @@ import java.io.File
 
 class DownloadSuccessReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
-        Log.d("Broadcast", "onReceive : $intent")
+        Log.d(
+            "Broadcast",
+            "onReceive : $intent"
+        )
         if (intent?.action == "PDF_DOWNLOAD_COMPLETE") {
-            val filePath = intent.getStringExtra("file_path")
+            val filePath =
+                intent.getStringExtra("file_path")
             Log.d("Broadcast", "Vào $filePath")
             showDownloadCompleteNotification(context, filePath)
         }
@@ -26,33 +30,24 @@ class DownloadSuccessReceiver : BroadcastReceiver() {
             return
         }
         Log.d("Broadcast", "Show $filePath")
-
         val intent = Intent(Intent.ACTION_VIEW)
         val file = File(filePath)
-        val uri = FileProvider.getUriForFile(
-            context,
-            "${context.packageName}.provider",
-            file
-        )
+        val uri = FileProvider.getUriForFile(context, "${context.packageName}.provider", file)
         intent.setDataAndType(uri, "application/pdf")
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-
         val pendingIntent = PendingIntent.getActivity(
             context,
             0,
             intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
-        val channelId = "download_channel" // Make sure channelId is defined
-        val notificationBuilder = NotificationCompat.Builder(context, channelId)
-            .setContentTitle("Download Complete")
-            .setContentText("File download is complete. Click to open.")
-            .setSmallIcon(R.drawable.download)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setContentIntent(pendingIntent)
-            .setAutoCancel(true)
-
+        val channelId =
+            "download_channel" // Make sure channelId is defined
+        val notificationBuilder =
+            NotificationCompat.Builder(context, channelId).setContentTitle("Download Complete")
+                .setContentText("File download is complete. Click to open.")
+                .setSmallIcon(R.drawable.download).setPriority(NotificationCompat.PRIORITY_HIGH)
+                .setContentIntent(pendingIntent).setAutoCancel(true)
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(3, notificationBuilder.build())

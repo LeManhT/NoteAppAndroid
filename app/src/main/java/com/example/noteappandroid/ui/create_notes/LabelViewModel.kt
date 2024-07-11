@@ -1,5 +1,6 @@
 package com.example.noteappandroid.ui.create_notes
 
+import android.database.sqlite.SQLiteConstraintException
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -28,6 +29,9 @@ class LabelViewModel @Inject constructor(private val labelRepositoryImpl: LabelR
 
     private val _labelsForFolderId = MutableStateFlow<List<Label>>(emptyList())
     val labelsForFolderId = _labelsForFolderId.asStateFlow()
+
+    private val _errorMessage = MutableStateFlow<String?>(null)
+    val errorMessage = _errorMessage.asStateFlow()
 
     init {
         getAllLabels()
@@ -59,10 +63,18 @@ class LabelViewModel @Inject constructor(private val labelRepositoryImpl: LabelR
 
     fun createLabel(label: Label) {
         viewModelScope.launch {
-            val newLabelId = labelRepositoryImpl.createLabel(label)
-            Log.d("TAGCR", "createLabel: $newLabelId")
-            _newLabelId.emit(newLabelId)
+            try {
+                val newLabelId = labelRepositoryImpl.createLabel(label)
+                Log.d("TAGCR", "createLabel: $newLabelId")
+                _newLabelId.emit(newLabelId)
+            } catch (e: SQLiteConstraintException) {
+                _errorMessage.emit("Label title already exists")
+            }
         }
+    }
+
+    fun clearErrorMessage() {
+        _errorMessage.value = null
     }
 
     fun updateLabel(label: Label) {

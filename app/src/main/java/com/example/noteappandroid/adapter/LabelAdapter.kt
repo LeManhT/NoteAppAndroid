@@ -16,6 +16,7 @@ class LabelAdapter(private val onLabelClickListener: ILabelClick? = null) :
 
     interface ILabelClick {
         fun handleLabelClick(label: Label)
+        fun handleLabelLongClick(label: Label)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LabelViewHolder {
@@ -39,6 +40,11 @@ class LabelAdapter(private val onLabelClickListener: ILabelClick? = null) :
             holder.itemView.setBackgroundColor(Color.BLUE)
         } else {
             holder.itemView.setBackgroundColor(Color.GRAY)
+        }
+
+        holder.itemView.setOnLongClickListener {
+            onLabelClickListener?.handleLabelLongClick(label)
+            true
         }
 
 //            tvTitle.setBackgroundColor(Color.parseColor(label.color))

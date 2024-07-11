@@ -3,7 +3,6 @@ package com.example.noteappandroid.adapter
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.text.Html
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,7 +27,7 @@ class NoteAdapter : ListAdapter<NoteEntity, NoteAdapter.NotesViewHolder>(diffCal
                 txtNoteBody.text = spannable
                 txtNoteDate.text = note.dateTime
 
-                Log.d("TAF 1", "bind: ${note.color}")
+//                Log.d("TAF 1", "bind: ${note.color}")
                 note.color?.let {
                     txtNoteTitle.setTextColor(Color.parseColor(note.color))
                 }
@@ -48,7 +47,7 @@ class NoteAdapter : ListAdapter<NoteEntity, NoteAdapter.NotesViewHolder>(diffCal
                 }
 
                 cardView.setOnClickListener {
-                    listener.onClicked(note.id)
+                    note.folderId?.let { it1 -> listener.onClicked(note.id, it1) }
                     imgSelected.visibility = View.GONE
                 }
 
@@ -86,7 +85,7 @@ class NoteAdapter : ListAdapter<NoteEntity, NoteAdapter.NotesViewHolder>(diffCal
     }
 
     interface OnItemClickListener {
-        fun onClicked(notesId: Long)
+        fun onClicked(noteId: Long, folderId: Long)
         fun onLongClicked(note: NoteEntity)
     }
 

@@ -65,20 +65,20 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/tv_folder_color"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingVertical="@dimen/spacing_normal"
-                android:text="@string/color" />
+<!--            <com.google.android.material.textview.MaterialTextView-->
+<!--                android:id="@+id/tv_folder_color"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:paddingVertical="@dimen/spacing_normal"-->
+<!--                android:text="@string/color" />-->
 
-            <com.airbnb.epoxy.EpoxyRecyclerView
-                android:id="@+id/rv"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/generic_shape"
-                android:orientation="horizontal"
-                tools:listitem="@layout/color_item" />
+<!--            <com.airbnb.epoxy.EpoxyRecyclerView-->
+<!--                android:id="@+id/rv"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:background="@drawable/generic_shape"-->
+<!--                android:orientation="horizontal"-->
+<!--                tools:listitem="@layout/color_item" />-->
 
             <com.google.android.material.textview.MaterialTextView
                 android:id="@+id/tv_parent_folder"

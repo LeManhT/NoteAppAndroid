@@ -53,16 +53,16 @@ class CreateFolderFragment : Fragment(), FolderClickListener {
             findNavController().popBackStack()
         }
 
-        binding.rv.adapter = colorController.adapter
-        val colors = listOf(
-            R.color.colorPrimary,
-            R.color.colorBackground,
-            R.color.colorSurface,
-            R.color.colorBackground
-        )
-
-        colorController.colors = colors
-        colorController.requestModelBuild()
+//        binding.rv.adapter = colorController.adapter
+//        val colors = listOf(
+//            R.color.colorPrimary,
+//            R.color.colorBackground,
+//            R.color.colorSurface,
+//            R.color.colorBackground
+//        )
+//
+//        colorController.colors = colors
+//        colorController.requestModelBuild()
 
         binding.txtChooseParentFolder.setOnClickListener {
             showDetailDialog()

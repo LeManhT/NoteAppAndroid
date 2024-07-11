@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -23,33 +24,67 @@ class LabelDialogFragment : BaseDialogFragment() {
     private val labelViewModel by viewModels<LabelViewModel>()
     private val noteLabelViewModel by viewModels<NoteLabelViewModel>()
     private val args: LabelDialogFragmentArgs by navArgs()
-
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentLabelDialogBinding.inflate(inflater, container, false)
+        binding = FragmentLabelDialogBinding.inflate(
+            inflater,
+            container,
+            false
+        )
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+        super.onViewCreated(
+            view,
+            savedInstanceState
+        )
         binding.btnCreateLabel.setOnClickListener {
             val labelTitle = binding.edtLabelTitle.text.toString()
-            val label = Label(0, args.folderId, labelTitle)
+            val label = Label(
+                0,
+                args.folderId,
+                labelTitle
+            )
             labelViewModel.createLabel(label)
-            viewLifecycleOwner.lifecycleScope.launch {
-                labelViewModel.newLabelId.collectLatest {
-                    Log.d("LabelDialogFragment", "onViewCreated1: $it noteId : ${args.noteId}")
-                    if (args.isCreateFromNote && it != -1L) {
-                        Log.d("LabelDialogFragment", "onViewCreated2: $it noteId : ${args.noteId}")
-                        val noteLabel = NoteLabel(0, args.noteId, it)
-                        noteLabelViewModel.createNoteLabel(noteLabel)
-                    }
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            labelViewModel.newLabelId.collectLatest { newLabelId ->
+                Log.d(
+                    "LabelDialogFragment",
+                    "onViewCreated1: $newLabelId noteId : ${args.noteId}"
+                )
+                if (args.isCreateFromNote && newLabelId != -1L && args.noteId != -1L) {
+                    Log.d(
+                        "LabelDialogFragment",
+                        "onViewCreated2: $newLabelId noteId : ${args.noteId}"
+                    )
+                    val noteLabel = NoteLabel(
+                        0,
+                        args.noteId,
+                        newLabelId
+                    )
+                    noteLabelViewModel.createNoteLabel(noteLabel)
+                }
+                if (newLabelId != -1L) {
+                    findNavController().popBackStack()
                 }
             }
-            findNavController().popBackStack()
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            labelViewModel.errorMessage.collectLatest { errorMessage ->
+                errorMessage?.let {
+                    Toast.makeText(
+                        requireContext(),
+                        it,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    labelViewModel.clearErrorMessage()
+                }
+            }
         }
     }
-
 }

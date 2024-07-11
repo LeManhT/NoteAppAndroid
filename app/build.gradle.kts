@@ -78,23 +78,18 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.3.0")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("com.airbnb.android:lottie:3.5.0")
-
     // Kotlin Navigation
     implementation("androidx.navigation:navigation-fragment-ktx:$nav_version")
     implementation("androidx.navigation:navigation-ui-ktx:$nav_version")
-
 //    Hilt
     implementation("com.google.dagger:hilt-android:2.48")
     ksp("com.google.dagger:dagger-compiler:2.48")
     ksp("com.google.dagger:hilt-android-compiler:2.48")
-
     // Easy Permission
     implementation("pub.devrel:easypermissions:3.0.0")
-
     //POI
     implementation(libs.poi)
     implementation(libs.poi.ooxml)
-
     implementation("me.relex:circleindicator:2.1.6")
     implementation("com.google.android.flexbox:flexbox:3.0.0")
 

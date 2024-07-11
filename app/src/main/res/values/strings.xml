@@ -5,7 +5,7 @@
     <string name="splash_text3">Learn in different ways and everywhere</string>
     <string name="splash_text4">Customize your theme to your exact needs</string>
 
-    <string name="made_by_me">Made by group 4</string>
+    <string name="made_by_me">Made by group 25</string>
     <string name="splash_text">Life is too fast. Don\'t forget anything. Note it</string>
     <string name="create_note">Create Note</string>
     <string name="start_typing">Start typing …</string>
@@ -112,5 +112,6 @@
     <string name="default_notification_channel_id">Noti_ID</string>
     <string name="back_press_again_to_out_app">Press back again to exit</string>
     <string name="list_folder">List folder here</string>
+    <string name="are_you_sure_to_delete_this_label">Are you sure to delete this label ?</string>
 
 </resources>
